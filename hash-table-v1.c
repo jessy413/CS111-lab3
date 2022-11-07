@@ -84,6 +84,9 @@ void hash_table_v1_add_entry(struct hash_table_v1 *hash_table,
 	struct list_head *list_head = &hash_table_entry->list_head;
 	struct list_entry *list_entry = get_list_entry(hash_table, key, list_head);
 
+	int lock = pthread_mutex_lock(&mutex);
+	if (lock != 0)
+		exit(lock);
 	/* Update the value if it already exists */
 	if (list_entry != NULL)
 	{
@@ -91,9 +94,6 @@ void hash_table_v1_add_entry(struct hash_table_v1 *hash_table,
 		return;
 	}
 
-	int lock = pthread_mutex_lock(&mutex);
-	if (lock != 0)
-		exit(lock);
 	list_entry = calloc(1, sizeof(struct list_entry));
 	list_entry->key = key;
 	list_entry->value = value;
