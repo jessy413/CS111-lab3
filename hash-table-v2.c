@@ -104,6 +104,7 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	if (lock != 0)
 		exit(lock);
 	list_entry = calloc(1, sizeof(struct list_entry));
+	pthread_mutex_unlock(&mutex2);
 
 	pthread_mutex_lock(&mutex3);
 	list_entry->key = key;
