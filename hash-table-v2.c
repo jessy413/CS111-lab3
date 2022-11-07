@@ -105,14 +105,14 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 		return;
 	}
 
-	lock = pthread_mutex_lock(&mutex);
+	int lock = pthread_mutex_lock(&mutex);
 	if (lock != 0)
 		exit(lock);
 	list_entry = calloc(1, sizeof(struct list_entry));
 	list_entry->key = key;
 	list_entry->value = value;
 	SLIST_INSERT_HEAD(list_head, list_entry, pointers);
-	unlock = pthread_mutex_unlock(&mutex);
+	int unlock = pthread_mutex_unlock(&mutex);
 	if (unlock != 0)
 		exit(unlock);
 }
