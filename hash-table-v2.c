@@ -81,7 +81,7 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	static pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 	static pthread_mutex_t mutex2 = PTHREAD_MUTEX_INITIALIZER;
 	static pthread_mutex_t mutex3 = PTHREAD_MUTEX_INITIALIZER;
-	// static pthread_mutex_t mutex4 = PTHREAD_MUTEX_INITIALIZER;
+	static pthread_mutex_t mutex4 = PTHREAD_MUTEX_INITIALIZER;
 	// static pthread_mutex_t mutex5 = PTHREAD_MUTEX_INITIALIZER;
 
 	struct hash_table_entry *hash_table_entry = get_hash_table_entry(hash_table, key);
@@ -112,11 +112,11 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 
 	// pthread_mutex_lock(&mutex4);
 	list_entry->value = value;
-	// pthread_mutex_unlock(&mutex4);
+	pthread_mutex_unlock(&mutex3);
 
-	// pthread_mutex_lock(&mutex5);
+	pthread_mutex_lock(&mutex4);
 	SLIST_INSERT_HEAD(list_head, list_entry, pointers);
-	int unlock = pthread_mutex_unlock(&mutex3);
+	int unlock = pthread_mutex_unlock(&mutex4);
 	if (unlock != 0)
 		exit(unlock);
 }
