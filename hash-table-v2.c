@@ -104,19 +104,19 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	if (lock != 0)
 		exit(lock);
 	list_entry = calloc(1, sizeof(struct list_entry));
-	pthread_mutex_unlock(&mutex2);
+	// pthread_mutex_unlock(&mutex2);
 
-	pthread_mutex_lock(&mutex3);
+	// pthread_mutex_lock(&mutex3);
 	list_entry->key = key;
-	pthread_mutex_unlock(&mutex3);
+	// pthread_mutex_unlock(&mutex3);
 
-	pthread_mutex_lock(&mutex4);
+	// pthread_mutex_lock(&mutex4);
 	list_entry->value = value;
-	pthread_mutex_unlock(&mutex4);
+	// pthread_mutex_unlock(&mutex4);
 
-	pthread_mutex_lock(&mutex5);
+	// pthread_mutex_lock(&mutex5);
 	SLIST_INSERT_HEAD(list_head, list_entry, pointers);
-	int unlock = pthread_mutex_unlock(&mutex5);
+	int unlock = pthread_mutex_unlock(&mutex2);
 	if (unlock != 0)
 		exit(unlock);
 }
