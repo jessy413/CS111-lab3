@@ -12,6 +12,7 @@ struct list_entry
 	uint32_t value;
 	SLIST_ENTRY(list_entry)
 	pointers;
+	pthread_mutex_t lock;
 };
 
 SLIST_HEAD(list_head, list_entry);
@@ -24,7 +25,6 @@ struct hash_table_entry
 struct hash_table_v2
 {
 	struct hash_table_entry entries[HASH_TABLE_CAPACITY];
-	pthread_mutex_t lock;
 };
 
 struct hash_table_v2 *hash_table_v2_create()
@@ -85,8 +85,7 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	static pthread_mutex_t mutex4 = PTHREAD_MUTEX_INITIALIZER;
 	// static pthread_mutex_t mutex5 = PTHREAD_MUTEX_INITIALIZER;
 
-	pthread_mutex_lock(&hash_table->lock);
-	struct hash_table_entry *hash_table_entry = get_hash_table_entry(hash_table, key);
+		struct hash_table_entry *hash_table_entry = get_hash_table_entry(hash_table, key);
 	struct list_head *list_head = &hash_table_entry->list_head;
 	struct list_entry *list_entry = get_list_entry(hash_table, key, list_head);
 
@@ -95,7 +94,9 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 		// int lock = pthread_mutex_lock(&mutex1);
 		// if (lock != 0)
 		//	exit(lock);
+		pthread_mutex_lock(&list_entry->lock);
 		list_entry->value = value;
+		pthread_mutex_unlock(&list_entry->lock);
 		// int unlock = pthread_mutex_unlock(&mutex1);
 		// if (unlock != 0)
 		// exit(unlock);
