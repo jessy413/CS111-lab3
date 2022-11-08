@@ -87,7 +87,9 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	struct hash_table_entry *hash_table_entry = get_hash_table_entry(hash_table, key);
 
 	struct list_head *list_head = &hash_table_entry->list_head;
+	pthread_mutex_lock(&mutex);
 	struct list_entry *list_entry = get_list_entry(hash_table, key, list_head);
+	pthread_mutex_unlock(&mutex);
 
 	/* Update the value if it already exists */
 	if (list_entry != NULL)
