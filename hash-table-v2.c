@@ -108,7 +108,7 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	//	exit(lock);
 	list_entry = calloc(1, sizeof(struct list_entry));
 	// pthread_mutex_unlock(&mutex2);
-
+	pthread_mutex_lock(&list_entry->lock);
 	// pthread_mutex_lock(&mutex3);
 	list_entry->key = key;
 	// pthread_mutex_unlock(&mutex3);
@@ -122,7 +122,7 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	// int unlock = pthread_mutex_unlock(&mutex4);
 	// if (unlock != 0)
 	// exit(unlock);
-
+	pthread_mutex_unlock(&list_entry->lock);
 	pthread_mutex_destroy(&mutex1);
 	pthread_mutex_destroy(&mutex2);
 	pthread_mutex_destroy(&mutex3);
