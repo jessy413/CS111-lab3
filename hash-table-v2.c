@@ -128,3 +128,8 @@ void hash_table_v2_destroy(struct hash_table_v2 *hash_table)
 		{
 			list_entry = SLIST_FIRST(list_head);
 			SLIST_REMOVE_HEAD(list_head, pointers);
+			free(list_entry);
+		}
+	}
+	free(hash_table);
+}
