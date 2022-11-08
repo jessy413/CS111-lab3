@@ -85,7 +85,7 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	static pthread_mutex_t mutex4 = PTHREAD_MUTEX_INITIALIZER;
 	// static pthread_mutex_t mutex5 = PTHREAD_MUTEX_INITIALIZER;
 
-		struct hash_table_entry *hash_table_entry = get_hash_table_entry(hash_table, key);
+	struct hash_table_entry *hash_table_entry = get_hash_table_entry(hash_table, key);
 	struct list_head *list_head = &hash_table_entry->list_head;
 	struct list_entry *list_entry = get_list_entry(hash_table, key, list_head);
 
@@ -122,7 +122,7 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	// int unlock = pthread_mutex_unlock(&mutex4);
 	// if (unlock != 0)
 	// exit(unlock);
-	pthread_mutex_unlock(&hash_table->lock);
+
 	pthread_mutex_destroy(&mutex1);
 	pthread_mutex_destroy(&mutex2);
 	pthread_mutex_destroy(&mutex3);
