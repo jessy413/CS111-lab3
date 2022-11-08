@@ -84,11 +84,11 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	static pthread_mutex_t mutex3 = PTHREAD_MUTEX_INITIALIZER;
 	static pthread_mutex_t mutex4 = PTHREAD_MUTEX_INITIALIZER;
 
-		struct hash_table_entry *hash_table_entry = get_hash_table_entry(hash_table, key);
+	struct hash_table_entry *hash_table_entry = get_hash_table_entry(hash_table, key);
 	struct list_head *list_head = &hash_table_entry->list_head;
-	pthread_mutex_lock(&mutex1);
+	// pthread_mutex_lock(&mutex1);
 	struct list_entry *list_entry = get_list_entry(hash_table, key, list_head);
-	pthread_mutex_unlock(&mutex1);
+	// pthread_mutex_unlock(&mutex1);
 
 	/* Update the value if it already exists */
 	if (list_entry != NULL)
