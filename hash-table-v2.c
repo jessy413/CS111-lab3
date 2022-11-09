@@ -126,7 +126,7 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	// if (unlock != 0)
 	// 	exit(unlock);
 
-	if (pthread_mutex_lock(&hash_table->m[index]) != 0)
+	if (pthread_mutex_unlock(&hash_table->m[index]) != 0)
 		exit(EXIT_FAILURE);
 }
 
