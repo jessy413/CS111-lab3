@@ -90,44 +90,44 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	static pthread_mutex_t mutex3 = PTHREAD_MUTEX_INITIALIZER;
 	static pthread_mutex_t mutex4 = PTHREAD_MUTEX_INITIALIZER;
 
-	// uint32_t index = bernstein_hash(key) % HASH_TABLE_CAPACITY;
-	// if (pthread_mutex_lock(&hash_table->m[index]) != 0)
-	// exit(EXIT_FAILURE);
+	uint32_t index = bernstein_hash(key) % HASH_TABLE_CAPACITY;
+	if (pthread_mutex_lock(&hash_table->m[index]) != 0)
+		exit(EXIT_FAILURE);
 
-	pthread_mutex_lock(&mutex1);
+	// pthread_mutex_lock(&mutex1);
 	struct hash_table_entry *hash_table_entry = get_hash_table_entry(hash_table, key);
 	struct list_head *list_head = &hash_table_entry->list_head;
 	struct list_entry *list_entry = get_list_entry(hash_table, key, list_head);
-	pthread_mutex_unlock(&mutex1);
+	// pthread_mutex_unlock(&mutex1);
 
 	/* Update the value if it already exists */
 	if (list_entry != NULL)
 	{
-		int lock = pthread_mutex_lock(&mutex2);
-		if (lock != 0)
-			exit(lock);
+		// int lock = pthread_mutex_lock(&mutex2);
+		// if (lock != 0)
+		// 	exit(lock);
 		list_entry->value = value;
-		int unlock = pthread_mutex_unlock(&mutex2);
-		if (unlock != 0)
-			exit(unlock);
+		// int unlock = pthread_mutex_unlock(&mutex2);
+		// if (unlock != 0)
+		// 	exit(unlock);
 		return;
 	}
 	// calloc doesn't need a lock since it's atomic
 	list_entry = calloc(1, sizeof(struct list_entry));
 
-	pthread_mutex_lock(&mutex4);
+	// pthread_mutex_lock(&mutex4);
 	list_entry->key = key;
 	list_entry->value = value;
-	pthread_mutex_unlock(&mutex4);
+	// pthread_mutex_unlock(&mutex4);
 
-	pthread_mutex_lock(&mutex3);
+	// pthread_mutex_lock(&mutex3);
 	SLIST_INSERT_HEAD(list_head, list_entry, pointers);
-	int unlock = pthread_mutex_unlock(&mutex3);
-	if (unlock != 0)
-		exit(unlock);
+	// int unlock = pthread_mutex_unlock(&mutex3);
+	// if (unlock != 0)
+	// 	exit(unlock);
 
-	// if (pthread_mutex_lock(&hash_table->m[index]) != 0)
-	//  exit(EXIT_FAILURE);
+	if (pthread_mutex_lock(&hash_table->m[index]) != 0)
+		exit(EXIT_FAILURE);
 }
 
 uint32_t hash_table_v2_get_value(struct hash_table_v2 *hash_table,
@@ -153,6 +153,7 @@ void hash_table_v2_destroy(struct hash_table_v2 *hash_table)
 			SLIST_REMOVE_HEAD(list_head, pointers);
 			free(list_entry);
 		}
+		pthread_mutex_destroy(&hash_table->m[i]);
 	}
 	free(hash_table);
 }
