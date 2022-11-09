@@ -37,7 +37,8 @@ struct hash_table_v2 *hash_table_v2_create()
 		struct hash_table_entry *entry = &hash_table->entries[i];
 		SLIST_INIT(&entry->list_head);
 
-		pthread_mutex_init(&hash_table->m[i], NULL);
+		if (pthread_mutex_init(&hash_table->m[i], NULL) != 0)
+			exit(EXIT_FAILURE);
 	}
 	return hash_table;
 }
@@ -90,7 +91,8 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	static pthread_mutex_t mutex4 = PTHREAD_MUTEX_INITIALIZER;
 
 	uint32_t index = bernstein_hash(key) % HASH_TABLE_CAPACITY;
-	pthread_mutex_lock(&hash_table->m[index]);
+	if (pthread_mutex_lock(&hash_table->m[index]) != 0)
+		exit(EXIT_FAILURE);
 
 	struct hash_table_entry *hash_table_entry = get_hash_table_entry(hash_table, key);
 	struct list_head *list_head = &hash_table_entry->list_head;
@@ -124,7 +126,8 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	// if (unlock != 0)
 	// 	exit(unlock);
 
-	pthread_mutex_lock(&hash_table->m[index]);
+	if (pthread_mutex_lock(&hash_table->m[index]) != 0)
+		exit(EXIT_FAILURE);
 }
 
 uint32_t hash_table_v2_get_value(struct hash_table_v2 *hash_table,
