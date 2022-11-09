@@ -84,11 +84,11 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 							 const char *key,
 							 uint32_t value)
 {
-	static pthread_mutex_t mutex5 = PTHREAD_MUTEX_INITIALIZER;
-	static pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
-	static pthread_mutex_t mutex2 = PTHREAD_MUTEX_INITIALIZER;
-	static pthread_mutex_t mutex3 = PTHREAD_MUTEX_INITIALIZER;
-	static pthread_mutex_t mutex4 = PTHREAD_MUTEX_INITIALIZER;
+	// static pthread_mutex_t mutex5 = PTHREAD_MUTEX_INITIALIZER;
+	// static pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
+	// static pthread_mutex_t mutex2 = PTHREAD_MUTEX_INITIALIZER;
+	// static pthread_mutex_t mutex3 = PTHREAD_MUTEX_INITIALIZER;
+	// static pthread_mutex_t mutex4 = PTHREAD_MUTEX_INITIALIZER;
 
 	uint32_t index = bernstein_hash(key) % HASH_TABLE_CAPACITY;
 	if (pthread_mutex_lock(&hash_table->m[index]) != 0)
@@ -112,7 +112,7 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 		// 	exit(unlock);
 		return;
 	}
-	// calloc doesn't need a lock since it's atomic
+
 	list_entry = calloc(1, sizeof(struct list_entry));
 
 	// pthread_mutex_lock(&mutex4);
