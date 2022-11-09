@@ -90,7 +90,7 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	static pthread_mutex_t mutex4 = PTHREAD_MUTEX_INITIALIZER;
 
 	uint32_t index = bernstein_hash(key) % HASH_TABLE_CAPACITY;
-	pthread_mutex_lock(hash_table[index]);
+	pthread_mutex_lock(&hash_table->m[index]);
 
 	struct hash_table_entry *hash_table_entry = get_hash_table_entry(hash_table, key);
 	struct list_head *list_head = &hash_table_entry->list_head;
