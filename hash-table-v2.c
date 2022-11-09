@@ -12,7 +12,7 @@ struct list_entry
 	uint32_t value;
 	SLIST_ENTRY(list_entry)
 	pointers;
-	pthread_mutex_t mutex;
+	pthread_mutex_t *mutex;
 };
 
 SLIST_HEAD(list_head, list_entry);
