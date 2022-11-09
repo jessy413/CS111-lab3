@@ -25,8 +25,7 @@ struct hash_table_v2
 {
 	struct hash_table_entry entries[HASH_TABLE_CAPACITY];
 
-	// create array of mutexes so that we can lock by bucket.
-	pthread_mutex_t mutexes[HASH_TABLE_CAPACITY];
+	pthread_mutex_t m[HASH_TABLE_CAPACITY];
 };
 
 struct hash_table_v2 *hash_table_v2_create()
@@ -38,11 +37,8 @@ struct hash_table_v2 *hash_table_v2_create()
 		struct hash_table_entry *entry = &hash_table->entries[i];
 		SLIST_INIT(&entry->list_head);
 
-		// initialize mutexes by bucket index and check for errors
-		int err = 0;
-		err = pthread_mutex_init(&hash_table->mutexes[i], NULL);
-		if (err != 0)
-			exit(err);
+		if (pthread_mutex_init(&hash_table->m[i], NULL) != 0)
+			exit(EXIT_FAILURE);
 	}
 	return hash_table;
 }
@@ -71,6 +67,7 @@ static struct list_entry *get_list_entry(struct hash_table_v2 *hash_table,
 			return entry;
 		}
 	}
+
 	return NULL;
 }
 
@@ -87,35 +84,50 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 							 const char *key,
 							 uint32_t value)
 {
-	// lock by bucket
-	int err = 0;
-	uint32_t index = bernstein_hash(key) % HASH_TABLE_CAPACITY;
-	err = pthread_mutex_lock(&hash_table->mutexes[index]);
-	if (err != 0)
-		exit(err);
+	static pthread_mutex_t mutex5 = PTHREAD_MUTEX_INITIALIZER;
+	static pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
+	static pthread_mutex_t mutex2 = PTHREAD_MUTEX_INITIALIZER;
+	static pthread_mutex_t mutex3 = PTHREAD_MUTEX_INITIALIZER;
+	static pthread_mutex_t mutex4 = PTHREAD_MUTEX_INITIALIZER;
 
-	// critical section
+	// uint32_t index = bernstein_hash(key) % HASH_TABLE_CAPACITY;
+	// if (pthread_mutex_lock(&hash_table->m[index]) != 0)
+	// exit(EXIT_FAILURE);
+
+	pthread_mutex_lock(&mutex1);
 	struct hash_table_entry *hash_table_entry = get_hash_table_entry(hash_table, key);
 	struct list_head *list_head = &hash_table_entry->list_head;
 	struct list_entry *list_entry = get_list_entry(hash_table, key, list_head);
+	pthread_mutex_unlock(&mutex1);
 
 	/* Update the value if it already exists */
 	if (list_entry != NULL)
 	{
+		int lock = pthread_mutex_lock(&mutex2);
+		if (lock != 0)
+			exit(lock);
 		list_entry->value = value;
+		int unlock = pthread_mutex_unlock(&mutex2);
+		if (unlock != 0)
+			exit(unlock);
 		return;
 	}
-
+	// calloc doesn't need a lock since it's atomic
 	list_entry = calloc(1, sizeof(struct list_entry));
+
+	pthread_mutex_lock(&mutex4);
 	list_entry->key = key;
 	list_entry->value = value;
-	SLIST_INSERT_HEAD(list_head, list_entry, pointers);
-	// critical section
+	pthread_mutex_unlock(&mutex4);
 
-	// unlock by bucket
-	err = pthread_mutex_unlock(&hash_table->mutexes[index]);
-	if (err != 0)
-		exit(err);
+	pthread_mutex_lock(&mutex3);
+	SLIST_INSERT_HEAD(list_head, list_entry, pointers);
+	int unlock = pthread_mutex_unlock(&mutex3);
+	if (unlock != 0)
+		exit(unlock);
+
+	// if (pthread_mutex_lock(&hash_table->m[index]) != 0)
+	//  exit(EXIT_FAILURE);
 }
 
 uint32_t hash_table_v2_get_value(struct hash_table_v2 *hash_table,
@@ -142,14 +154,5 @@ void hash_table_v2_destroy(struct hash_table_v2 *hash_table)
 			free(list_entry);
 		}
 	}
-	// also destroy mutexes and check for errors
-	for (size_t i = 0; i < HASH_TABLE_CAPACITY; ++i)
-	{
-		int err = 0;
-		err = pthread_mutex_destroy(&hash_table->mutexes[i]);
-		if (err != 0)
-			exit(err);
-	}
-
 	free(hash_table);
 }
