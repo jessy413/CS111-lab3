@@ -86,9 +86,9 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 
 	struct hash_table_entry *hash_table_entry = get_hash_table_entry(hash_table, key);
 	struct list_head *list_head = &hash_table_entry->list_head;
-	pthread_mutex_lock(&mutex1);
+	// pthread_mutex_lock(&mutex1);
 	struct list_entry *list_entry = get_list_entry(hash_table, key, list_head);
-	pthread_mutex_unlock(&mutex1);
+	// pthread_mutex_unlock(&mutex1);
 
 	/* Update the value if it already exists */
 	if (list_entry != NULL)
@@ -114,11 +114,11 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	list_entry->value = value;
 	// pthread_mutex_unlock(&mutex4);
 
-	// pthread_mutex_lock(&mutex5);
+	pthread_mutex_lock(&mutex3);
 	SLIST_INSERT_HEAD(list_head, list_entry, pointers);
-	// int unlock = pthread_mutex_unlock(&mutex3);
-	// if (unlock != 0)
-	// exit(unlock);
+	int unlock = pthread_mutex_unlock(&mutex3);
+	if (unlock != 0)
+		exit(unlock);
 }
 
 uint32_t hash_table_v2_get_value(struct hash_table_v2 *hash_table,
