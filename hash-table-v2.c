@@ -12,7 +12,6 @@ struct list_entry
 	uint32_t value;
 	SLIST_ENTRY(list_entry)
 	pointers;
-	pthread_mutex_t *mutex;
 };
 
 SLIST_HEAD(list_head, list_entry);
@@ -116,20 +115,17 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	// calloc doesn't need a lock since it's atomic
 	list_entry = calloc(1, sizeof(struct list_entry));
 
-	pthread_mutex_init(list_entry->mutex, NULL);
-	pthread_mutex_lock(list_entry->mutex);
-	// pthread_mutex_lock(&mutex4);
+	pthread_mutex_lock(&mutex4);
 	list_entry->key = key;
 	list_entry->value = value;
-	// pthread_mutex_unlock(&mutex4);
+	pthread_mutex_unlock(&mutex4);
 
-	// pthread_mutex_lock(&mutex3);
+	pthread_mutex_lock(&mutex3);
 	SLIST_INSERT_HEAD(list_head, list_entry, pointers);
-	// int unlock = pthread_mutex_unlock(&mutex3);
-	// if (unlock != 0)
-	// 	exit(unlock);
+	int unlock = pthread_mutex_unlock(&mutex3);
+	if (unlock != 0)
+		exit(unlock);
 
-	pthread_mutex_unlock(list_entry->mutex);
 	// if (pthread_mutex_lock(&hash_table->m[index]) != 0)
 	// 	exit(EXIT_FAILURE);
 }
