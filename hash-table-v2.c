@@ -12,7 +12,7 @@ struct list_entry
 	uint32_t value;
 	SLIST_ENTRY(list_entry)
 	pointers;
-	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_t mutex;
 };
 
 SLIST_HEAD(list_head, list_entry);
@@ -116,6 +116,7 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	// calloc doesn't need a lock since it's atomic
 	list_entry = calloc(1, sizeof(struct list_entry));
 
+	pthread_mutex_init(list_entry->mutex, NULL);
 	pthread_mutex_lock(list_entry->mutex);
 	// pthread_mutex_lock(&mutex4);
 	list_entry->key = key;
