@@ -159,7 +159,7 @@ void hash_table_v2_destroy(struct hash_table_v2 *hash_table)
 			free(list_entry);
 		}
 		// pthread_mutex_destroy(&hash_table->m[i]);
-		pthread_mutex_destory(entry);
+		pthread_mutex_destroy(entry);
 	}
 	free(hash_table);
 }
