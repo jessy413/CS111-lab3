@@ -37,7 +37,7 @@ struct hash_table_v2 *hash_table_v2_create()
 	{
 		struct hash_table_entry *entry = &hash_table->entries[i];
 		SLIST_INIT(&entry->list_head);
-		if (pthread_mutex_init(entry->mutex, NULL) != 0)
+		if (pthread_mutex_init(&entry->mutex, NULL) != 0)
 			exit(EXIT_FAILURE);
 		// if (pthread_mutex_init(&hash_table->m[i], NULL) != 0)
 		// 	exit(EXIT_FAILURE);
@@ -99,7 +99,7 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	// pthread_mutex_lock(&mutex1);
 	struct hash_table_entry *hash_table_entry = get_hash_table_entry(hash_table, key);
 
-	pthread_mutex_lock(hash_table_entry->mutex);
+	pthread_mutex_lock(&hash_table_entry->mutex);
 	struct list_head *list_head = &hash_table_entry->list_head;
 	struct list_entry *list_entry = get_list_entry(hash_table, key, list_head);
 	// pthread_mutex_unlock(&mutex1);
@@ -130,7 +130,7 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	// if (unlock != 0)
 	// 	exit(unlock);
 
-	pthread_mutex_unlock(hash_table_entry->mutex);
+	pthread_mutex_unlock(&hash_table_entry->mutex);
 	// if (pthread_mutex_unlock(&hash_table->m[index]) != 0)
 	// 	exit(EXIT_FAILURE);
 }
@@ -158,7 +158,8 @@ void hash_table_v2_destroy(struct hash_table_v2 *hash_table)
 			SLIST_REMOVE_HEAD(list_head, pointers);
 			free(list_entry);
 		}
-		pthread_mutex_destroy(&hash_table->m[i]);
+		// pthread_mutex_destroy(&hash_table->m[i]);
+		pthread_mutex_destory(entry);
 	}
 	free(hash_table);
 }
