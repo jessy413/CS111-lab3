@@ -42,7 +42,7 @@ remain constant. Explain any differences between the two.
 
 # - 0 missing
 
-Version 1 is about 1.1 times slower than the base inplementation with 8 threads and 1.6 times slower with 2 threads. The general slow is because the mutex is added around the whole add entry function implementatoin, making threads other than the one holding the mutex waiting for the current to finish, making the time longer for all threads to finish.
+Version 1 is about 1.1 times slower than the base inplementation with 8 threads and 1.6 times slower with 2 threads. The general slow is because the mutex is added around the whole add entry function implementatoin, making threads other than the one holding the mutex waiting for the current to finish, making the time longer for all threads to finish. The reason why the implementation with more thread is slower since more threads have to wait for the completion of one critical section to finish. 8 threads would starve the rest of the 7 threads while 2 threads will only starve 1 thread, so 7/8 of the process is stopped while only 1/2 is in the first command with two threads.
 
 ## Second Implementation
 
