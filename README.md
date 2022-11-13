@@ -23,24 +23,20 @@ high number of threads. Note that the amount of work (`-t` times `-s`) should
 remain constant. Explain any differences between the two.
 
 ./hash-table-tester -t 2 -s 50000
-#Generation: 11,878 usec
-#Hash table base: 61,622 usec
+#Generation: 11,965 usec
+#Hash table base: 94,220 usec
+#- 0 missing
+#Hash table v1: 117,875 usec
+#- 0 missing
 
-# - 0 missing
 
-#Hash table v1: 96,192 usec
+./hash-table-tester -t 8 -s 12500
+#Generation: 12,354 usec
+#Hash table base: 92,247 usec
+#- 0 missing
+#Hash table v1: 161,790 usec
+#- 0 missing
 
-# - 0 missing
-
-./hash-table-tester -t 8 -s 50000
-#Generation: 48,963 usec
-#Hash table base: 1,910,247 usec
-
-# - 0 missing
-
-#Hash table v1: 2,154,183 usec
-
-# - 0 missing
 
 Version 1 is about 1.1 times slower than the base inplementation with 8 threads and 1.6 times slower with 2 threads. The general slow is because the mutex is added around the whole add entry function implementatoin, making threads other than the one holding the mutex waiting for the current to finish, making the time longer for all threads to finish. The reason why the implementation with more thread is slower since more threads have to wait for the completion of one critical section to finish. 8 threads would starve the rest of the 7 threads while 2 threads will only starve 1 thread, so 7/8 of the process is stopped while only 1/2 is in the first command with two threads.
 
@@ -51,14 +47,14 @@ In the declaration of the hash table, I added an array of mutex same size with t
 ### Performance
 
 ./hash-table-tester -t 8 -s 50000
-Generation: 48,963 usec
-Hash table base: 1,910,247 usec
+#Generation: 48,963 usec
+#Hash table base: 1,910,247 usec
 
-- 0 missing
-  Hash table v1: 2,154,183 usec
-- 0 missing
-  Hash table v2: 629,913 usec
-- 0 missing
+#- 0 missing
+#Hash table v1: 2,154,183 usec
+#- 0 missing
+#Hash table v2: 629,913 usec
+#- 0 missing
 
 Version 2 uses only 0.3 times of the base implementation. This performance increase between version 2 and the other implementation is caused by the difference in locaiton of the addition of the mutexes. Now each mutex corresponds to one hash table entries, so when different threads trying to modify list entries within different hash table bucket, they will not be block by each other. In the meantime, only if different threads are trying to modifying list entries within in the same hash table entry, one has to wait for the one that owns the mutex for current bucket to finish in order to modify the same hash table entry. Hence concurrency is allowed while accuracy is maintained.
 

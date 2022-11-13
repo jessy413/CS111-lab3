@@ -102,6 +102,10 @@ void hash_table_v1_add_entry(struct hash_table_v1 *hash_table,
 	int unlock = pthread_mutex_unlock(&mutex);
 	if (unlock != 0)
 		exit(unlock);
+
+	int destroy = pthread_mutex_destroy(&mutex);
+	if (destroy != 0)
+		exit(destroy);
 }
 
 uint32_t hash_table_v1_get_value(struct hash_table_v1 *hash_table,
