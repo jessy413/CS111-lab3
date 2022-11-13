@@ -80,8 +80,6 @@ void hash_table_v1_add_entry(struct hash_table_v1 *hash_table,
 							 const char *key,
 							 uint32_t value)
 {
-	// static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-
 	int lock = pthread_mutex_lock(&hash_table->mutex);
 	if (lock != 0)
 		exit(lock);
